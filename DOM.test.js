@@ -28,4 +28,48 @@ describe('google을 불러올 수 있어야 한다.', () => {
     expect(login.innerHTML).toBe('로그인');
   });
 });
+
+describe('HTML 파일을 불러올 수 있어야 한다.', () => {
+  let document;
+  let serializedHTML;
+  beforeAll(() => {
+    return JSDOM.fromFile('./src/home.html').then(dom => {
+      document = dom.window.document;
+      serializedHTML = dom.serialize();
+      serializedHTML = removeSpace(serializedHTML)
+    });
+  });
+
+  test('#hello div에 Hello world라는 글자가 있어야 한다.', () => {
+    const div = document.getElementById('hello');
+    expect(div.innerHTML).toBe('Hello world');
+  });
+
+  test('home.html에서 불러온 string이 home.html과 일치해야 한다.', () => {
+    let HTML = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+      </head>
+      <body>
+        <div id="hello">Hello world</div>
+      </body>
+      </html>
+    `;
+
+    HTML = removeSpace(HTML);
+    expect(serializedHTML).toBe(HTML)
+  });
+});
+
+function removeSpace(str) {
+  let newStr = '';
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] !== ' ') newStr += str[i];
+  }
+  return newStr.replace(/(\r\n\t|\n|\r\t)/gm, ''); // 줄바꿈 제거
+}
   
